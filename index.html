@@ -58,7 +58,6 @@
             <img src="icono.jpeg" alt="Logo Agentes de Cambio" onerror="this.src='https://via.placeholder.com/55?text=Logo'">
             <h1>Agentes de cambio x Casa de la Amistad para Niños con Cáncer</h1>
         </div>
-        
     </header>
 
     <div class="banner-container">
@@ -83,7 +82,7 @@
             <div class="progress-box">
                 <div class="progress-label">
                     <span>Donaciones en Especie (total global)</span>
-                    <span id="txtProgresoEspecie">0 / 4800 (0%)</span>
+                    <span id="txtProgresoEspecie">0 / 4800 unidades (0%)</span>
                 </div>
                 <div class="progress-track">
                     <div class="progress-fill" id="barraProgresoEspecie" style="width: 0%;"></div>
@@ -188,17 +187,8 @@
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function cargarProgresoGeneral() {
-        // 1. Calcular Meta Total y Recolectado en Especie
-        const itemsList = document.querySelectorAll('li[data-meta]');
-        let metaTotalEspecie = 0;
-        let metasPorId = {};
-
-        itemsList.forEach(li => {
-            const id = li.dataset.id;
-            const meta = parseFloat(li.dataset.meta) || 0;
-            metaTotalEspecie += meta;
-            if (id) metasPorId[id] = meta;
-        });
+        // 1. Meta Fija en Especie establecida a 4800
+        const metaTotalEspecie = 4800;
 
         // Obtener historial de especie desde Supabase
         const { data: especies, error: errEspecie } = await _supabase
