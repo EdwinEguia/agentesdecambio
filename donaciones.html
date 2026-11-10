@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Donaciones - Agentes de Cambio</title>
+    <style>
+        :root {
+            --primary: #1b4f72;
+            --accent: #c0392b;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
+        .wrapper { max-width: 900px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 30px; }
+        
+        .btn-back { display: inline-block; background: #64748b; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; margin-bottom: 20px; }
+        .btn-back:hover { background: #475569; }
+
+        h1 { color: var(--primary); margin-bottom: 10px; font-size: 1.5rem; border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+        h2 { color: var(--primary); margin-top: 30px; margin-bottom: 15px; font-size: 1.2rem; }
+        
+        /* Buscador */
+        .search-container { margin-bottom: 20px; }
+        .search-container input { width: 100%; padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        .search-container input:focus { border-color: var(--primary); }
+
+        .cat-heading { margin-top: 25px; margin-bottom: 10px; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 0.95rem; }
+        .bg-urgente { background: #fadbd8; color: #78281f; }
+        .bg-media { background: #fdebd0; color: #7e5109; }
+        .bg-normal { background: #ebf5fb; color: #1b4f72; }
+
+        .item-card { background: #fdfdfd; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .item-info { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; font-size: 0.95rem; }
+        .item-info strong { color: var(--primary); }
+        .item-meta-sub { font-size: 0.85rem; color: #64748b; }
+        
+        .input-control { display: flex; align-items: center; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
+        .input-control label { font-size: 0.85rem; font-weight: bold; color: #475569; }
+        .input-control input[type="number"] { width: 100px; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; text-align: center; }
+
+        .btn-register { background: #2980b9; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        .btn-register:hover { background: #1f618d; }
+
+        .progress-container { background: #e2e8f0; border-radius: 4px; height: 8px; overflow: hidden; width: 100%; margin-top: 4px; }
+        .progress-bar { background: #27ae60; height: 100%; width: 0%; transition: width 0.3s ease; }
+        .progress-text { font-size: 0.8rem; color: #64748b; text-align: right; }
+
+        .finance-box { background: #e8f8f5; border: 1px solid #a3e4d7; padding: 25px; border-radius: 8px; margin-top: 35px; }
+        .finance-box h2 { border-bottom-color: #16a085; color: #0e6251; margin-top: 0; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
+        .form-group input, .form-group select { width: 100%; max-width: 320px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; background: white; }
+
+        .btn-submit { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+        .btn-submit:hover { background: #219653; }
+
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .btn-delete:hover { background: #c0392b; }
+
+        .counter-display { font-size: 1.8rem; font-weight: bold; color: #16a085; margin: 15px 0; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; background: white; }
+        table, th, td { border: 1px solid #cbd5e1; }
+        th, td { padding: 10px; text-align: left; }
+        th { background: #f1f5f9; color: var(--primary); }
+        td img.proof-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <a href="index.html" class="btn-back">← Volver a Página Principal</a>
+    
+    <h1>Panel de Control de Donaciones</h1>
+    <p>Utiliza el buscador para localizar artículos rápidamente, registra aportaciones y mantén el control al día.</p>
+
+    <h2>1. Donaciones en Especie</h2>
+    
+    <!-- BARRA DE BÚSQUEDA INSTÁNTNEA -->
+    <div class="search-container" style="margin-top: 15px;">
+        <input type="text" id="inputBuscador" placeholder="🔍 Buscar artículo (ej. café, azúcar, arroz...)" onkeyup="filtrarArticulos()">
+    </div>
+
+    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">* Ingresa la cantidad aportada y haz clic en <strong>"Registrar"</strong> para enviarla al historial y actualizar el progreso.</p>
+
+    <!-- CONTENEDOR DE ARTÍCULOS -->
+    <div id="listaArticulosContainer">
+
+        <!-- URGENTE -->
+        <div class="cat-heading bg-urgente categoria-titulo">⚠️ Urgente</div>
+
+        <div class="item-card" data-id="cafe_molido" data-meta="25" data-nombre="café molido">
+            <div class="item-info">
+                <span><strong>Café molido</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 25 | Semanal: ~6.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Café molido')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="cafe_soluble_1_2" data-meta="2" data-nombre="café soluble bote 1.2 kg">
+            <div class="item-info">
+                <span><strong>Café soluble</strong> (Bote 1.2 kg)</span>
+                <span class="item-meta-sub">Meta Mensual: 2 | Semanal: ~0.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Café soluble (1.2 kg)')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="cafe_soluble_50g" data-meta="100" data-nombre="café soluble frasco 50 g">
+            <div class="item-info">
+                <span><strong>Café soluble</strong> (Frasco 50 g)</span>
+                <span class="item-meta-sub">Meta Mensual: 100 | Semanal: 25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Café soluble (50 g)')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="canela_vara" data-meta="1" data-nombre="canela en vara">
+            <div class="item-info">
+                <span><strong>Canela en vara</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 1 | Semanal: ~0.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Canela en vara')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="cereal" data-meta="50" data-nombre="cereal caja 500 g">
+            <div class="item-info">
+                <span><strong>Cereal</strong> (Caja 500 g)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Cereal')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="chocolate_polvo" data-meta="120" data-nombre="chocolate en polvo bolsa 250 g">
+            <div class="item-info">
+                <span><strong>Chocolate en polvo</strong> (Bolsa 250 g)</span>
+                <span class="item-meta-sub">Meta Mensual: 120 | Semanal: 30</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Chocolate en polvo')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="galletas" data-meta="150" data-nombre="galletas paquetin rollo">
+            <div class="item-info">
+                <span><strong>Galletas</strong> (Paquetín / Rollo)</span>
+                <span class="item-meta-sub">Meta Mensual: 150 | Semanal: 37.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Galletas')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="galleta_maria" data-meta="10" data-nombre="galleta maria caja">
+            <div class="item-info">
+                <span><strong>Galleta María</strong> (Caja)</span>
+                <span class="item-meta-sub">Meta Mensual: 10 | Semanal: 2.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Galleta María')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="galletas_surtidas" data-meta="20" data-nombre="galletas surtidas caja">
+            <div class="item-info">
+                <span><strong>Galletas surtidas</strong> (Caja)</span>
+                <span class="item-meta-sub">Meta Mensual: 20 | Semanal: 5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Galletas surtidas')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="garbanzo" data-meta="60" data-nombre="garbanzo bolsa 500 g">
+            <div class="item-info">
+                <span><strong>Garbanzo</strong> (Bolsa 500 g)</span>
+                <span class="item-meta-sub">Meta Mensual: 60 | Semanal: 15</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Garbanzo')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="gelatina_sobre" data-meta="200" data-nombre="gelatina sobre bolsa 120 g">
+            <div class="item-info">
+                <span><strong>Gelatina sobre</strong> (Bolsa 120 g)</span>
+                <span class="item-meta-sub">Meta Mensual: 200 | Semanal: 50</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Gelatina sobre')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="leche_condensada" data-meta="50" data-nombre="leche condensada lata">
+            <div class="item-info">
+                <span><strong>Leche condensada</strong> (Lata)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Leche condensada')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="leche_evaporada" data-meta="50" data-nombre="leche evaporada lata">
+            <div class="item-info">
+                <span><strong>Leche evaporada</strong> (Lata)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Leche evaporada')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="lenteja" data-meta="150" data-nombre="lenteja bolsa medio">
+            <div class="item-info">
+                <span><strong>Lenteja</strong> (Bolsa Medio)</span>
+                <span class="item-meta-sub">Meta Mensual: 150 | Semanal: 37.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Lenteja')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="maizena_atole" data-meta="150" data-nombre="maizena atole sobre pieza">
+            <div class="item-info">
+                <span><strong>Maizena atole sobre</strong> (Pieza)</span>
+                <span class="item-meta-sub">Meta Mensual: 150 | Semanal: 37.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Maizena atole')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="sal_mesa" data-meta="40" data-nombre="sal de mesa kilo">
+            <div class="item-info">
+                <span><strong>Sal de mesa</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 40 | Semanal: 10</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Sal de mesa')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+
+        <!-- MEDIA -->
+        <div class="cat-heading bg-media categoria-titulo">⚠️ Media</div>
+
+        <div class="item-card" data-id="aceite" data-meta="48" data-nombre="aceite caja">
+            <div class="item-info">
+                <span><strong>Aceite</strong> (Litro)</span>
+                <span class="item-meta-sub">Meta Mensual: 48 | Semanal: 12</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Aceite')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="aceite_oliva" data-meta="4" data-nombre="aceite de oliva litro">
+            <div class="item-info">
+                <span><strong>Aceite de oliva</strong> (Litro)</span>
+                <span class="item-meta-sub">Meta Mensual: 4 | Semanal: 1</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Aceite de oliva')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="amaranto" data-meta="100" data-nombre="amaranto bolsa medio">
+            <div class="item-info">
+                <span><strong>Amaranto</strong> (Bolsa Medio)</span>
+                <span class="item-meta-sub">Meta Mensual: 100 | Semanal: 25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Amaranto')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="atun" data-meta="8" data-nombre="atún lata 1.8">
+            <div class="item-info">
+                <span><strong>Atún</strong> (Lata 1.8)</span>
+                <span class="item-meta-sub">Meta Mensual: 8 | Semanal: 2</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Atún')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="azucar" data-meta="150" data-nombre="azúcar kilo">
+            <div class="item-info">
+                <span><strong>Azúcar</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 150 | Semanal: 37.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Azúcar')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="azucar_500g" data-meta="500" data-nombre="azúcar 500 gramos">
+            <div class="item-info">
+                <span><strong>Azúcar</strong> (500 Gramos)</span>
+                <span class="item-meta-sub">Meta Mensual: 500 | Semanal: 125</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Azúcar 500g')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="jamaica" data-meta="5" data-nombre="jamaica kilo">
+            <div class="item-info">
+                <span><strong>Jamaica</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 5 | Semanal: ~1.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Jamaica')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="leche_polvo" data-meta="160" data-nombre="leche polvo bolsa 500 g">
+            <div class="item-info">
+                <span><strong>Leche polvo</strong> (Bolsa 500 G)</span>
+                <span class="item-meta-sub">Meta Mensual: 160 | Semanal: 40</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Leche en polvo')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="salsa_valentina" data-meta="10" data-nombre="salsa valentina frasco">
+            <div class="item-info">
+                <span><strong>Salsa valentina</strong> (Frasco)</span>
+                <span class="item-meta-sub">Meta Mensual: 10 | Semanal: 2.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Salsa valentina')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+
+        <!-- SIN PRIORIDAD ASIGNADA -->
+        <div class="cat-heading bg-normal categoria-titulo">📋 Sin Prioridad Asignada</div>
+
+        <div class="item-card" data-id="agua" data-meta="5" data-nombre="agua paq c/40 de 500 ml">
+            <div class="item-info">
+                <span><strong>Agua</strong> (Paq C/40 de 500 ml)</span>
+                <span class="item-meta-sub">Meta Mensual: 5 | Semanal: ~1.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Agua')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="arandanos" data-meta="2" data-nombre="arándanos kilo">
+            <div class="item-info">
+                <span><strong>Arándanos</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 2 | Semanal: 0.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Arándanos')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="arroz" data-meta="50" data-nombre="arroz kilo">
+            <div class="item-info">
+                <span><strong>Arroz</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Arroz')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="avena" data-meta="100" data-nombre="avena bolsa medio">
+            <div class="item-info">
+                <span><strong>Avena</strong> (Bolsa Medio)</span>
+                <span class="item-meta-sub">Meta Mensual: 100 | Semanal: 25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Avena')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="barritas" data-meta="300" data-nombre="barritas avena amaranto granola">
+            <div class="item-info">
+                <span><strong>Barritas</strong> (avena, amaranto, granola)</span>
+                <span class="item-meta-sub">Meta Mensual: 300 | Semanal: 75</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Barritas')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="cajeta" data-meta="5" data-nombre="cajeta frasco">
+            <div class="item-info">
+                <span><strong>Cajeta</strong> (Frasco)</span>
+                <span class="item-meta-sub">Meta Mensual: 5 | Semanal: ~1.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Cajeta')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="chamoy" data-meta="5" data-nombre="chamoy litro">
+            <div class="item-info">
+                <span><strong>Chamoy</strong> (Litro)</span>
+                <span class="item-meta-sub">Meta Mensual: 5 | Semanal: ~1.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Chamoy')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="champiñon" data-meta="5" data-nombre="champiñón lata 2.8">
+            <div class="item-info">
+                <span><strong>Champiñón lata</strong> (2.8)</span>
+                <span class="item-meta-sub">Meta Mensual: 5 | Semanal: ~1.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Champiñón lata')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="chile_chipotle" data-meta="10" data-nombre="chile chipotle lata mediana">
+            <div class="item-info">
+                <span><strong>Chile chipotle</strong> (Lata Mediana)</span>
+                <span class="item-meta-sub">Meta Mensual: 10 | Semanal: 2.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Chile chipotle')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="chiles_vinagre" data-meta="4" data-nombre="chiles en vinagre lata bolsa">
+            <div class="item-info">
+                <span><strong>Chiles en vinagre</strong> (Lata/Bolsa)</span>
+                <span class="item-meta-sub">Meta Mensual: 4 | Semanal: 1</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Chiles en vinagre')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="durazno" data-meta="20" data-nombre="durazno en almíbar lata">
+            <div class="item-info">
+                <span><strong>Durazno en almíbar</strong> (Lata)</span>
+                <span class="item-meta-sub">Meta Mensual: 20 | Semanal: 5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Durazno en almíbar')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="frijol_negro" data-meta="150" data-nombre="frijol negro kilo">
+            <div class="item-info">
+                <span><strong>Frijol negro</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 150 | Semanal: 37.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Frijol negro')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="frijol_bolsa" data-meta="200" data-nombre="frijol bolsa piezas">
+            <div class="item-info">
+                <span><strong>Frijol bolsa</strong> (Piezas)</span>
+                <span class="item-meta-sub">Meta Mensual: 200 | Semanal: 50</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Frijol bolsa')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="frijol_peruano" data-meta="50" data-nombre="frijol peruano kilo">
+            <div class="item-info">
+                <span><strong>Frijol peruano</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Frijol peruano')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="frijol_pinto" data-meta="150" data-nombre="frijol pinto kilo">
+            <div class="item-info">
+                <span><strong>Frijol pinto</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 150 | Semanal: 37.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Frijol pinto')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="harina_maiz" data-meta="100" data-nombre="harina de maíz kilo">
+            <div class="item-info">
+                <span><strong>Harina de maíz</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 100 | Semanal: 25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Harina de maíz')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="harina_trigo" data-meta="50" data-nombre="harina de trigo kilo">
+            <div class="item-info">
+                <span><strong>Harina de trigo</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Harina de trigo')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="harina_hotcakes" data-meta="3" data-nombre="harina para hot cakes bolsa 4 kilos">
+            <div class="item-info">
+                <span><strong>Harina para Hot Cakes</strong> (Bolsa 4 Kilos)</span>
+                <span class="item-meta-sub">Meta Mensual: 3 | Semanal: ~0.75</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Harina hot cakes')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="jugo_naranja" data-meta="20" data-nombre="jugo único naranja litro">
+            <div class="item-info">
+                <span><strong>Jugo único naranja</strong> (Litro)</span>
+                <span class="item-meta-sub">Meta Mensual: 20 | Semanal: 5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Jugo naranja')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="leche_deslactosada" data-meta="5" data-nombre="leche deslactosada caja">
+            <div class="item-info">
+                <span><strong>Leche deslactosada</strong> (Caja)</span>
+                <span class="item-meta-sub">Meta Mensual: 5 | Semanal: ~1.25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Leche deslactosada')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="maiz_palomero" data-meta="50" data-nombre="maíz palomero bolsa 500 g">
+            <div class="item-info">
+                <span><strong>Maíz palomero</strong> (Bolsa 500 G)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Maíz palomero')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="mezcla_semillas" data-meta="3" data-nombre="mezcla semillas nueces almendras kilo">
+            <div class="item-info">
+                <span><strong>Mezcla semillas</strong> (nueces, almendras)</span>
+                <span class="item-meta-sub">Meta Mensual: 3 | Semanal: ~0.75</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Mezcla semillas')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="pan_molido" data-meta="3" data-nombre="pan molido bolsa 5k">
+            <div class="item-info">
+                <span><strong>Pan molido</strong> (Bolsa 5K)</span>
+                <span class="item-meta-sub">Meta Mensual: 3 | Semanal: ~0.75</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Pan molido')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="pasa" data-meta="2" data-nombre="pasa kg">
+            <div class="item-info">
+                <span><strong>Pasa</strong> (Kg)</span>
+                <span class="item-meta-sub">Meta Mensual: 2 | Semanal: 0.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Pasas')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="pimienta" data-meta="3" data-nombre="pimienta negra molida frasco 460 g">
+            <div class="item-info">
+                <span><strong>Pimienta negra molida</strong> (Frasco 460 G)</span>
+                <span class="item-meta-sub">Meta Mensual: 3 | Semanal: ~0.75</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Pimienta')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="piña_almibar" data-meta="10" data-nombre="piña en almíbar lata">
+            <div class="item-info">
+                <span><strong>Piña en almíbar</strong> (Lata)</span>
+                <span class="item-meta-sub">Meta Mensual: 10 | Semanal: 2.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Piña en almíbar')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="pure_tomate" data-meta="20" data-nombre="puré de tomate litro">
+            <div class="item-info">
+                <span><strong>Puré de tomate</strong> (Litro)</span>
+                <span class="item-meta-sub">Meta Mensual: 20 | Semanal: 5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Puré de tomate')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="sal_grano" data-meta="50" data-nombre="sal de grano kilo">
+            <div class="item-info">
+                <span><strong>Sal de grano</strong> (Kilo)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Sal de grano')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="sardina" data-meta="100" data-nombre="sardina pieza">
+            <div class="item-info">
+                <span><strong>Sardina</strong> (Pieza)</span>
+                <span class="item-meta-sub">Meta Mensual: 100 | Semanal: 25</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Sardina')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="sopa" data-meta="150" data-nombre="sopa bolsa 250 g">
+            <div class="item-info">
+                <span><strong>Sopa</strong> (Bolsa 250 g)</span>
+                <span class="item-meta-sub">Meta Mensual: 150 | Semanal: 37.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Sopa')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="tajin" data-meta="5" data-nombre="tajín reducido en sodio 255 g pieza">
+            <div class="item-info">
+                <span><strong>Tajín reducido en sodio 255 g</strong> (Pieza)</span>
+                <span class="item-meta-sub">Meta Quincenal: 5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Tajín')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="tortillinas" data-meta="5" data-nombre="tortillinas paquete c/50">
+            <div class="item-info">
+                <span><strong>Tortillinas</strong> (Paquete C/50)</span>
+                <span class="item-meta-sub">Meta Quincenal: 5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Tortillinas')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+        <div class="item-card" data-id="verdura_lata" data-meta="50" data-nombre="verdura lata piezas">
+            <div class="item-info">
+                <span><strong>Verdura lata</strong> (Piezas)</span>
+                <span class="item-meta-sub">Meta Mensual: 50 | Semanal: 12.5</span>
+            </div>
+            <div class="input-control">
+                <label>Aportación:</label>
+                <input type="number" min="0" value="0" class="input-cantidad">
+                <button class="btn-register" onclick="registrarEspecie(this, 'Verdura lata')">Registrar</button>
+            </div>
+            <div class="progress-container"><div class="progress-bar"></div></div>
+            <div class="progress-text">0% completado</div>
+        </div>
+
+    </div> <!-- FIN CONTENEDOR ARTÍCULOS -->
+
+
+    <!-- NUEVO HISTORIAL DE DONACIONES EN ESPECIE -->
+    <div style="background: #fdfefe; border: 1px solid #cbd5e1; padding: 20px; border-radius: 8px; margin-top: 25px;">
+        <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 10px;">📋 Historial de Entradas (Especie)</h3>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">Aquí se listan todas las aportaciones registradas de artículos.</p>
+        <table id="tablaHistorialEspecie">
+            <thead>
+                <tr>
+                    <th>Artículo</th>
+                    <th>Cantidad Aportada</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Se llena automáticamente -->
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- 2. FINANZAS / DONACIONES ECONÓMICAS -->
+    <div class="finance-box">
+        <h2>2. Donaciones Económicas y Finanzas</h2>
+        <p style="margin-bottom: 15px; font-size: 0.9rem;">Registra las aportaciones en efectivo o transferencia. Adjunta el comprobante para mantener la transparencia.</p>
+        
+        <div class="form-group">
+            <label>Monto aportado ($ MXN):</label>
+            <input type="number" id="montoInput" placeholder="Ej. 300" min="0" step="0.01">
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de aportación:</label>
+            <select id="tipoPago">
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Subir comprobante o imagen:</label>
+            <input type="file" id="imagenInput" accept="image/*">
+        </div>
+
+        <button class="btn-submit" onclick="registrarFinanza()">Registrar Contribución Económica</button>
+
+        <h3 style="margin-top: 25px; font-size: 1rem; color: #0e6251;">Suma Total Acumulada:</h3>
+        <div class="counter-display">$ <span id="totalDinero">0.00</span> MXN</div>
+
+        <h3 style="margin-top: 25px; font-size: 1rem; color: var(--primary);">Historial de Ingresos Económicos:</h3>
+        <table id="tablaFinanzas">
+            <thead>
+                <tr>
+                    <th>Monto</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Comprobante</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Se llena automáticamente con JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // --- BUSCADOR INSTANTÁNEO ---
+    function filtrarArticulos() {
+        const texto = document.getElementById('inputBuscador').value.toLowerCase();
+        const cards = document.querySelectorAll('.item-card');
+        const titulosCat = document.querySelectorAll('.categoria-titulo');
+
+        cards.forEach(card => {
+            const nombre = card.dataset.nombre;
+            if (nombre.includes(texto)) {
+                card.style.display = "flex";
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        // Ocultar títulos de categoría si se busca algo específico
+        titulosCat.forEach(titulo => {
+            if (texto.trim() !== "") {
+                titulo.style.display = "none";
+            } else {
+                titulo.style.display = "block";
+            }
+        });
+    }
+
+    // --- REGISTRAR APORTACIÓN EN ESPECIE AL HISTORIAL ---
+    function registrarEspecie(btn, nombreArticulo) {
+        const card = btn.closest('.item-card');
+        const id = card.dataset.id;
+        const meta = parseFloat(card.dataset.meta);
+        const inputCantidad = card.querySelector('.input-cantidad');
+        const cantidadAportada = parseFloat(inputCantidad.value) || 0;
+
+        if (cantidadAportada <= 0) {
+            alert('Ingresa una cantidad mayor a 0 para registrar.');
+            return;
+        }
+
+        // Obtener total actual acumulado de ese artículo
+        let totalActual = parseFloat(localStorage.getItem('especie_' + id)) || 0;
+        totalActual += cantidadAportada;
+        localStorage.setItem('especie_' + id, totalActual);
+
+        // Guardar en el historial de especie
+        let historialEspecie = JSON.parse(localStorage.getItem('historial_especie')) || [];
+        const fecha = new Date().toLocaleDateString();
+        historialEspecie.push({ articulo: nombreArticulo, cantidad: cantidadAportada, fecha: fecha, idRef: id });
+        localStorage.setItem('historial_especie', JSON.stringify(historialEspecie));
+
+        inputCantidad.value = 0;
+        cargarDatosGuardados();
+        alert(`¡Registrado con éxito! Se sumaron ${cantidadAportada} a ${nombreArticulo}.`);
+    }
+
+    // --- ELIMINAR ENTRADA DEL HISTORIAL DE ESPECIE ---
+    function eliminarEntradaEspecie(index) {
+        let historialEspecie = JSON.parse(localStorage.getItem('historial_especie')) || [];
+        const item = historialEspecie[index];
+
+        if (confirm(`¿Deseas eliminar este registro de ${item.cantidad} de ${item.articulo}? (Se restará del acumulado)`)) {
+            // Restar del total del artículo
+            let totalActual = parseFloat(localStorage.getItem('especie_' + item.idRef)) || 0;
+            totalActual -= item.cantidad;
+            if (totalActual < 0) totalActual = 0;
+            localStorage.setItem('especie_' + item.idRef, totalActual);
+
+            // Borrar del historial
+            historialEspecie.splice(index, 1);
+            localStorage.setItem('historial_especie', JSON.stringify(historialEspecie));
+            cargarDatosGuardados();
+        }
+    }
+
+    // --- GESTIÓN DE FINANZAS Y COMPROBANTES ---
+    function registrarFinanza() {
+        const montoInput = document.getElementById('montoInput');
+        const tipoPago = document.getElementById('tipoPago').value;
+        const imagenInput = document.getElementById('imagenInput');
+        const monto = parseFloat(montoInput.value);
+
+        if (!monto || monto <= 0) {
+            alert('Por favor, ingresa una cantidad válida.');
+            return;
+        }
+
+        let historial = JSON.parse(localStorage.getItem('historial_finanzas')) || [];
+        const fecha = new Date().toLocaleDateString();
+
+        if (imagenInput.files && imagenInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                historial.push({ monto: monto, tipo: tipoPago, fecha: fecha, imagen: e.target.result });
+                localStorage.setItem('historial_finanzas', JSON.stringify(historial));
+                limpiarYRecargarFinanzas();
+            };
+            reader.readAsDataURL(imagenInput.files[0]);
+        } else {
+            historial.push({ monto: monto, tipo: tipoPago, fecha: fecha, imagen: null });
+            localStorage.setItem('historial_finanzas', JSON.stringify(historial));
+            limpiarYRecargarFinanzas();
+        }
+    }
+
+    function limpiarYRecargarFinanzas() {
+        document.getElementById('montoInput').value = '';
+        document.getElementById('imagenInput').value = '';
+        cargarDatosGuardados();
+    }
+
+    function eliminarFinanza(index) {
+        let historial = JSON.parse(localStorage.getItem('historial_finanzas')) || [];
+        if (confirm('¿Estás seguro de que deseas eliminar este registro económico?')) {
+            historial.splice(index, 1);
+            localStorage.setItem('historial_finanzas', JSON.stringify(historial));
+            cargarDatosGuardados();
+        }
+    }
+
+    // --- CARGAR DATOS AL ABRIR LA PÁGINA ---
+    function cargarDatosGuardados() {
+        // 1. Cargar tarjetas de artículos y actualizar barras con los totales guardados
+        document.querySelectorAll('.item-card').forEach(card => {
+            const id = card.dataset.id;
+            const meta = parseFloat(card.dataset.meta);
+            const totalGuardado = parseFloat(localStorage.getItem('especie_' + id)) || 0;
+
+            let porcentaje = (totalGuardado / meta) * 100;
+            if (porcentaje > 100) porcentaje = 100;
+
+            const barra = card.querySelector('.progress-bar');
+            const texto = card.querySelector('.progress-text');
+            barra.style.width = porcentaje + '%';
+            texto.textContent = `${totalGuardado} / ${meta} (${Math.round(porcentaje)}%)`;
+        });
+
+        // 2. Cargar tabla del historial de especie
+        let historialEspecie = JSON.parse(localStorage.getItem('historial_especie')) || [];
+        const tbodyEspecie = document.querySelector('#tablaHistorialEspecie tbody');
+        tbodyEspecie.innerHTML = '';
+
+        if (historialEspecie.length === 0) {
+            tbodyEspecie.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#64748b;">No hay registros en especie aún.</td></tr>';
+        }
+
+        historialEspecie.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${item.articulo}</strong></td>
+                <td>+ ${item.cantidad}</td>
+                <td>${item.fecha}</td>
+                <td><button class="btn-delete" onclick="eliminarEntradaEspecie(${index})">Eliminar</button></td>
+            `;
+            tbodyEspecie.appendChild(row);
+        });
+
+        // 3. Cargar historial y finanzas de dinero
+        let historialDinero = JSON.parse(localStorage.getItem('historial_finanzas')) || [];
+        let totalDinero = 0;
+        const tbodyDinero = document.querySelector('#tablaFinanzas tbody');
+        tbodyDinero.innerHTML = '';
+
+        if (historialDinero.length === 0) {
+            tbodyDinero.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#64748b;">No hay registros económicos aún.</td></tr>';
+        }
+
+        historialDinero.forEach((item, index) => {
+            totalDinero += item.monto;
+            const row = document.createElement('tr');
+            let imgHTML = item.imagen ? `<img src="${item.imagen}" class="proof-thumb" onclick="window.open(this.src)" title="Ver imagen">` : 'Sin imagen';
+
+            row.innerHTML = `
+                <td>$${item.monto.toFixed(2)}</td>
+                <td>${item.tipo}</td>
+                <td>${item.fecha}</td>
+                <td>${imgHTML}</td>
+                <td><button class="btn-delete" onclick="eliminarFinanza(${index})">Eliminar</button></td>
+            `;
+            tbodyDinero.appendChild(row);
+        });
+
+        document.getElementById('totalDinero').textContent = totalDinero.toFixed(2);
+    }
+
+    window.onload = cargarDatosGuardados;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentes de cambio x Casa de la Amistad</title>
+    <style>
+        :root {
+            --primary: #1b4f72;
+            --accent: #c0392b;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
+        .wrapper { max-width: 900px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; }
+        
+        header { background: white; padding: 20px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; flex-wrap: wrap; gap: 15px; }
+        .title-area { display: flex; align-items: center; gap: 15px; flex: 1; min-width: 280px; }
+        .title-area img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        h1 { font-size: 1.3rem; color: var(--primary); }
+        
+        .btn-nav { background: var(--accent); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; transition: background 0.2s; }
+        .btn-nav:hover { background: #962d22; }
+
+        .banner-container { width: 100%; max-height: 320px; overflow: hidden; background: #e2e8f0; }
+        .banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .content { padding: 30px; }
+        h2 { color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 5px; margin-top: 30px; margin-bottom: 15px; font-size: 1.2rem; }
+        h2:first-of-type { margin-top: 0; }
+        p { margin-bottom: 15px; text-align: justify; }
+
+        .progress-box { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .progress-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; }
+        .progress-track { background: #cbd5e1; border-radius: 6px; height: 14px; overflow: hidden; }
+        .progress-fill { background: #27ae60; height: 100%; width: 0%; transition: width 0.4s ease; }
+
+        .category-title { font-weight: bold; margin-top: 20px; padding: 6px 10px; border-radius: 4px; font-size: 0.95rem; }
+        .cat-urgente { background: #fadbd8; color: #78281f; }
+        .cat-media { background: #fdebd0; color: #7e5109; }
+        .cat-normal { background: #ebf5fb; color: #1b4f72; }
+
+        ul { padding-left: 20px; margin-top: 8px; }
+        li { margin-bottom: 5px; font-size: 0.95rem; }
+
+        footer { text-align: center; padding: 20px; background: #f1f5f9; font-size: 0.85rem; color: #64748b; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <header>
+        <div class="title-area">
+            <!-- Foto pequeña a la izquierda del título -->
+            <img src="C:\Users\Eguia\Desktop\casa hogar\10.jpeg" alt="Logo Agentes de Cambio" onerror="this.src='https://via.placeholder.com/55?text=Logo'">
+            <h1>Agentes de cambio x Casa de la Amistad para Niños con Cáncer</h1>
+        </div>
+        <a href="donaciones.html" class="btn-nav">Ir a Panel de Donaciones</a>
+    </header>
+
+    <!-- Foto / Banner abajo del título -->
+    <div class="banner-container">
+        <img src="C:\Users\Eguia\Desktop\casa hogar\101.png" alt="Banner del proyecto" onerror="this.src='https://via.placeholder.com/900x300?text=Banner+del+Proyecto'">
+    </div>
+
+    <div class="content">
+        <section>
+            <h2>¿Qué somos?</h2>
+            <p>Somos un proyecto social comprometido a generar acciones solidarias en beneficio de la Casa de la Amistad para Niños con Cáncer, promoviendo la participación de estudiantes, escuelas y sociedad en general mediante campañas de sensibilización y recolección.</p>
+            
+            <h2>Misión</h2>
+            <p>Somos un proyecto social comprometido con generar acciones solidarias en beneficio de la Casa de la Amistad para Niños con Cáncer, promoviendo la participación de estudiantes, escuelas y sociedad en general mediante campañas de sensibilización, donativos y actividades de apoyo que contribuyan a fortalecer esta causa.</p>
+            
+            <h2>Visión</h2>
+            <p>Ser un proyecto reconocido por impulsar la participación social y el compromiso solidario de las nuevas generaciones, creando una comunidad de personas conscientes, participativas y dispuestas a contribuir mediante acciones concretas en beneficio de quienes más lo necesitan.</p>
+        </section>
+
+        <section>
+            <h2>Progreso General de Metas</h2>
+            
+            <div class="progress-box">
+                <div class="progress-label">
+                    <span>Donaciones en Especie</span>
+                    <span id="txtProgresoEspecie">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="barraProgresoEspecie" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="progress-box">
+                <div class="progress-label">
+                    <span>Donaciones Monetarias (Finanzas)</span>
+                    <span id="txtProgresoDinero">$0.00 MXN</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="barraProgresoDinero" style="background: #2980b9; width: 0%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Desglose de Artículos</h2>
+            
+            <div class="category-title cat-urgente">⚠️ Urgente</div>
+            <ul>
+                <li>Café molido: 25 Kilo</li>
+                <li>Café soluble: 2 Bote 1.2 kg</li>
+                <li>Café soluble: 100 Frasco 50 g</li>
+                <li>Canela en vara: 1 Kilo</li>
+                <li>Cereal: 50 Caja 500 g</li>
+                <li>Chocolate en polvo: 120 Bolsa 250 g</li>
+                <li>Galletas: 150 Paquetín / Rollo</li>
+                <li>Galleta María: 10 Caja</li>
+                <li>Galletas surtidas: 20 Caja</li>
+                <li>Garbanzo: 60 Bolsa 500 g</li>
+                <li>Gelatina sobre: 200 Bolsa 120 g</li>
+                <li>Leche condensada: 50 Lata</li>
+                <li>Leche evaporada: 50 Lata</li>
+                <li>Lenteja: 150 Bolsa Medio</li>
+                <li>Maizena atole sobre: 150 Pieza</li>
+                <li>Sal de mesa: 40 Kilo</li>
+            </ul>
+
+            <div class="category-title cat-media">⚠️ Media</div>
+            <ul>
+                <li>Aceite: 4 Caja</li>
+                <li>Aceite de oliva: 4 Litro</li>
+                <li>Amaranto: 100 Bolsa Medio</li>
+                <li>Atún: 8 Lata 1.8</li>
+                <li>Azúcar: 150 Kilo</li>
+                <li>Azúcar: 500 Gramos</li>
+                <li>Jamaica: 5 Kilo</li>
+                <li>Leche polvo: 160 Bolsa 500 G</li>
+                <li>Salsa valentina: 10 Frasco</li>
+            </ul>
+
+            <div class="category-title cat-normal">📋 Sin Prioridad Asignada</div>
+            <ul>
+                <li>Agua: 5 Paq C/40 de 500 ml</li>
+                <li>Arándanos: 2 Kilo</li>
+                <li>Arroz: 50 Kilo</li>
+                <li>Avena: 100 Bolsa Medio</li>
+                <li>Barritas avena, amaranto, granola: 300 Pieza</li>
+                <li>Cajeta: 5 Frasco</li>
+                <li>Chamoy: 5 Litro</li>
+                <li>Champiñón lata: 5 2.8</li>
+                <li>Chile chipotle: 10 Lata Mediana</li>
+                <li>Chiles en vinagre: 4 Lata/Bolsa</li>
+                <li>Durazno en almíbar: 20 Lata</li>
+                <li>Frijol negro: 150 Kilo</li>
+                <li>Frijol bolsa: 200 Piezas</li>
+                <li>Frijol peruano: 50 Kilo</li>
+                <li>Frijol pinto: 150 Kilo</li>
+                <li>Harina de maíz: 100 Kilo</li>
+                <li>Harina de trigo: 50 Kilo</li>
+                <li>Harina para Hot Cakes: 3 Bolsa 4 Kilos</li>
+                <li>Jugo único naranja: 20 Litro</li>
+                <li>Leche deslactosada: 5 Caja</li>
+                <li>Maíz palomero: 50 Bolsa 500 G</li>
+                <li>Mezcla semillas (nueces, almendras): 3 Kilo</li>
+                <li>Pan molido: 3 Bolsa 5K</li>
+                <li>Pasa: 2 Kg</li>
+                <li>Pimienta negra molida: 3 Frasco 460 G</li>
+                <li>Piña en almíbar: 10 Lata</li>
+                <li>Puré de tomate: 20 Litro</li>
+                <li>Sal de grano: 50 Kilo</li>
+                <li>Sardina: 100 Pieza</li>
+                <li>Sopa: 150 Bolsa 250 g</li>
+                <li>Tajín reducido en sodio 255 g: 5 Pieza</li>
+                <li>Tortillinas: 5 Paquete C/50</li>
+                <li>Verdura lata: 50 Piezas</li>
+            </ul>
+        </section>
+    </div>
+
+    <footer>
+        <p>Agentes de cambio x Casa de la Amistad para Niños con Cáncer — Todos los derechos reservados.</p>
+    </footer>
+</div>
+
+<script>
+    // Conectar datos guardados en el navegador para mostrar progreso general en la página principal
+    window.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('[data-meta]');
+        let totalMetas = 0;
+        let totalAcumuladoEspecie = 0;
+
+        let sumaPorcentaje = 0;
+        let contadorArticulos = 0;
+
+        let keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith('especie_')) {
+                // Hay registros
+            }
+        });
+        
+        let historial = JSON.parse(localStorage.getItem('historial_finanzas')) || [];
+        let totalDinero = historial.reduce((acc, curr) => acc + curr.monto, 0);
+        document.getElementById('txtProgresoDinero').textContent = `$${totalDinero.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        
+        let metaDineroFicticia = 10000;
+        let porcentajeDinero = Math.min(100, (totalDinero / metaDineroFicticia) * 100);
+        document.getElementById('barraProgresoDinero').style.width = porcentajeDinero + '%';
+    });
+</script>
+
+</body>
+</html>
